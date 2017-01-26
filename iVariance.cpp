@@ -27,17 +27,13 @@ Container dat2map(const char* filename){
             std::replace( str.begin(), str.end(), ',', '.'); // replace alll comma to dot
             istringstream ss(str);
             double num;
-            bool hasZero = false;
             vector<double> currentLine;
             while(ss >> num)
             {
                 //result[i].push_back(num); 
                 currentLine.push_back(num);
-                if (num == 0){
-                    hasZero = true;
-                }
             }
-            if ((lastLen > 0 && lastLen != currentLine.size()) || hasZero ){
+            if (lastLen > 0 && lastLen != currentLine.size() ){
                 std::cout << "Line " << lNum  << " has hole or zero in it :\n" << str << " \n";
                 std::cout << "this line ignored \n\n";
                 ignoredCount++;
@@ -189,10 +185,13 @@ int main(int argc, char** argv)
         Container varianceTable;
         cout << "\n";
         int i = 0;
-        for(auto col : data){
-            for(int by = 1; by <= iterations; by++){
+        for(auto col : data)
+        {
+            for(int by = 1; by <= iterations; by++)
+            {
                 vector<double> conv = convolution(col.second, by,iterations);
-                if (conv.size() == col.second.size() && by > 1){
+                if (conv.size() == col.second.size() && by > 1)
+                {
                     // данные закончились
                     break;
                 }
@@ -207,7 +206,8 @@ int main(int argc, char** argv)
         map2dat(varianceTable,newFileName);
         cout << "Data saved to " << newFileName << "\n";
     }
-    catch (exception& e){
+    catch (exception& e)
+    {
         std::cout << e.what();
         return EXIT_FAILURE;
     
