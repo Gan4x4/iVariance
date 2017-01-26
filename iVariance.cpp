@@ -11,7 +11,6 @@
 
 using namespace std;
 typedef map<int,vector<double>> Container;
-static const int ITERATIONS = 100;
 
 Container dat2map(const char* filename){
     ifstream file(filename,ios::in);
@@ -22,6 +21,7 @@ Container dat2map(const char* filename){
         int lastLen = 0;
         cout << "Read file: " << filename << "\n";
         int lNum = 0;
+        int ignoredCount = 0;
         while(getline(file, str)) 
         {
             std::replace( str.begin(), str.end(), ',', '.'); // replace alll comma to dot
@@ -38,8 +38,9 @@ Container dat2map(const char* filename){
                 }
             }
             if ((lastLen > 0 && lastLen != currentLine.size()) || hasZero ){
-                std::cout << "\n Line " << lNum  << " has hole or zero in it :\n" << str << " \n";
-                std::cout << " this line ignored \n";
+                std::cout << "Line " << lNum  << " has hole or zero in it :\n" << str << " \n";
+                std::cout << "this line ignored \n\n";
+                ignoredCount++;
             }
             else{
                 for (size_t i=0; i< currentLine.size(); i++){
@@ -50,7 +51,10 @@ Container dat2map(const char* filename){
             if (lNum % 1000 == 0 ) cout << ".";
             lNum ++;
         }
-        cout << "\nRead " << result[0].size() << " lines";
+        cout << "\nRead " << result[0].size() << " lines\n";
+        if (ignoredCount > 0){
+            cout << "Ignored  " << ignoredCount << " lines\n";
+        }
         return result;
     }  
     throw invalid_argument("Error while read file"); 
@@ -116,12 +120,12 @@ double variance(vector<double> data)
 }
 
 
-vector<double> convolution(vector<double> data,int by){
+vector<double> convolution(vector<double> data,int by, int iterations){
     if (by == 1) {
         return data;
     }
     vector<double> result;
-    if (by < 1 || by> ITERATIONS){
+    if (by < 1 || by> iterations){
         throw invalid_argument("Invalid step " + by);
     }
     if (data.size() < by){
@@ -169,6 +173,15 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
     
+    int iterations = 100;
+    if (argc == 3){
+        iterations = atoi(argv[2]);
+    }
+    
+    if (iterations < 2){
+        std::cout << "Iteration count invalid: " << argv[2] << " \n\n";
+    }
+    
     try
     {
         // Read file
@@ -177,8 +190,8 @@ int main(int argc, char** argv)
         cout << "\n";
         int i = 0;
         for(auto col : data){
-            for(int by = 1; by <= ITERATIONS; by++){
-                vector<double> conv = convolution(col.second, by);
+            for(int by = 1; by <= iterations; by++){
+                vector<double> conv = convolution(col.second, by,iterations);
                 if (conv.size() == col.second.size() && by > 1){
                     // данные закончились
                     break;
