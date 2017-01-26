@@ -21,31 +21,34 @@ Container dat2map(const char* filename){
         Container result;
         int lastLen = 0;
         cout << "Read file: " << filename << "\n";
+        int lNum = 0;
         while(getline(file, str)) 
         {
             std::replace( str.begin(), str.end(), ',', '.'); // replace alll comma to dot
             istringstream ss(str);
             double num;
-            int i = 0;
-            int lNum = 0;
+            bool hasZero = false;
+            vector<double> currentLine;
             while(ss >> num)
             {
-                if (i > 0 ) // bypass line number
-                {
-                    //std::cout << num << " " ;
-                    result[i-1].push_back(num);  
+                //result[i].push_back(num); 
+                currentLine.push_back(num);
+                if (num == 0){
+                    hasZero = true;
                 }
-                else
-                {
-                    lNum = num;
+            }
+            if ((lastLen > 0 && lastLen != currentLine.size()) || hasZero ){
+                std::cout << "\n Line " << lNum  << " has hole or zero in it :\n" << str << " \n";
+                std::cout << " this line ignored \n";
+            }
+            else{
+                for (size_t i=0; i< currentLine.size(); i++){
+                    result[i].push_back(currentLine[i]);
                 }
-                i++;
             }
-            if (lastLen > 0 && lastLen != i){
-                std::cout << "\n Line " << lNum  << "has hole :" << str << " \n";
-            }
-            lastLen = i;
+            lastLen = currentLine.size();
             if (lNum % 1000 == 0 ) cout << ".";
+            lNum ++;
         }
         cout << "\nRead " << result[0].size() << " lines";
         return result;
@@ -183,7 +186,7 @@ int main(int argc, char** argv)
                 double var = variance(conv);
                 varianceTable[col.first].push_back(var);
             }
-            cout << "Column " << i << " has " << col.second.size() << "items  and calculated at " <<  varianceTable[col.first].size() << " Iterations \n";
+            cout << "Column " << i << " has " << col.second.size() << " items  and calculated at " <<  varianceTable[col.first].size() << " Iterations \n";
             i++;
         }
         // write data to file
