@@ -165,7 +165,7 @@ int main(int argc, char** argv)
 {
     if (argc < 2) 
     {
-        std::cout << "Usage: " << argv[1] << " data file name\n\n";
+        std::cout << "Usage: " << argv[0] << " data file name\n\n";
         return EXIT_FAILURE;
     }
     
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
     }
     
     if (iterations < 2){
-        std::cout << "Iteration count invalid: " << argv[2] << " \n\n";
+        std::cout << "Iteration count invalid:  \n\n";
     }
     
     try
